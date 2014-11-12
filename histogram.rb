@@ -1,7 +1,11 @@
+require './structure/histo_range'
 class Histogram
   def initialize(values, bin_width)
-    @bin_width = bin_width
-    @values = values
+    @bin_width = bin_width.to_i
+    @values = case values
+              when String then values.split(',').map(&:to_i)
+              else  values
+             end
     @store = {}
   end
 
@@ -27,15 +31,9 @@ class Histogram
       initial = 0
       final = @bin_width
       (1..groups).each do |group_number|
-        @store[group_number] = {range: (initial ... final)}
+        @store[group_number] = {range: Structure::HistoRange.new(initial,final, true)}
         initial = @bin_width * group_number
         final += @bin_width
       end 
     end
-
-
-end
-
-if __FILE__ == $0
-  puts Histogram.new( [1, 4, 3, 2, 13, 23, 5, 15], 5).generate
 end
